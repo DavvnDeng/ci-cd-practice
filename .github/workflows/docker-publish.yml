@@ -1,0 +1,58 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+# 🔑 关键权限设置：允许这个工作流写入 GitHub Packages
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # 第一步：测试代码
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  # 第二步：构建并推送 Docker 镜像
+  build-and-push:
+    needs: test # 🛑 只有当 test 作业成功后，才会运行这一步
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 登录到 GitHub Container Registry (GHCR)
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # GitHub 自动生成的临时密码
+
+      # 构建并推送
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # 🏷️ 镜像标签：这里使用 github 上下文自动生成路径
+          # 注意：GitHub 规定镜像名称必须全部小写
+          tags: ghcr.io/${{ github.repository_owner }}/ci-cd-practice:latest
