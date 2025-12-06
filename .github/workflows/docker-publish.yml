@@ -55,4 +55,4 @@ jobs:
           push: true
           # 🏷️ 镜像标签：这里使用 github 上下文自动生成路径
           # 注意：GitHub 规定镜像名称必须全部小写
-          tags: ghcr.io/${{ github.repository_owner }}/ci-cd-practice:latest
+          tags: ghcr.io/davvndeng/ci-cd-practice:latest
