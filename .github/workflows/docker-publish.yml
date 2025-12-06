@@ -69,8 +69,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Notification
-        # 使用简单的 curl 命令发送请求
         run: |
-          curl -X POST -H "Content-Type: application/json" \
-          -d '{"msg": "GitHub Actions run finished!", "status": "${{ needs.build-and-push.result }}"}' \
-          ${{ secrets.NOTIFY_WEBHOOK }}
+          echo "模拟发送通知..."
+          echo "构建状态: ${{ needs.build-and-push.result }}"
+          echo "如果有真实 Webhook，这里就会发送请求到: ${{ secrets.NOTIFY_WEBHOOK }}"
+          echo "通知发送成功 (模拟)!"
